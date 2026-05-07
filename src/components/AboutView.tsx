@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { Target, Shield, Users, Trophy } from 'lucide-react';
+import { LeadershipSection } from './sections/LeadershipSection';
 
 export const AboutView = () => {
   return (
@@ -73,6 +76,7 @@ export const AboutView = () => {
           ))}
         </div>
       </div>
+      <LeadershipSection />
     </div>
   );
 };

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
-import { useScroll, useTransform, motion, useMotionValueEvent } from 'motion/react';
+import { useScroll, useTransform, motion, useMotionValueEvent, useSpring } from 'motion/react';
 
 interface ConstructionScrollSequenceProps {
   frameCount?: number;
@@ -29,13 +31,16 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
     offset: ['start start', 'end end'],
   });
 
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 70,
+    damping: 25,
+    restDelta: 0.001
+  });
+
   const frameIndex = useTransform(scrollYProgress, [0, 1], [0, frameCount - 1]);
 
-  const [hudElevation, setHudElevation] = useState("0.00");
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setHudElevation((latest * 150).toFixed(2));
-  });
+  // Optimization: useTransform instead of useState prevents React from re-rendering the entire component 60 times a second during scroll
+  const hudElevationText = useTransform(scrollYProgress, (latest) => `+${(latest * 150).toFixed(2)}m`);
 
   useEffect(() => {
     let isMounted = true;
@@ -46,8 +51,10 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         const index = i + 1;
         return new Promise<void>((resolve) => {
           const img = new Image();
+          img.decoding = 'async'; // Optimization: decode images off main thread
           const paddedIndex = String(index).padStart(3, '0');
-          const src = `/${imagePrefix}${paddedIndex}${imageExtension}`;
+          const rawSrc = `/${imagePrefix}${paddedIndex}${imageExtension}`;
+          const src = rawSrc.replace(/\/\//g, '/');
           
           img.onload = () => {
             if (isMounted) {
@@ -80,45 +87,58 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
   useEffect(() => {
     if (!loadingComplete) return;
 
-    let animationFrameId: number;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
     let lastRenderedIndex = -1;
 
-    const render = () => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) {
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
+    const renderFrame = (index: number) => {
+      if (index === lastRenderedIndex) return;
+      
+      const ctx = canvas.getContext('2d', { alpha: false }); // Optimization: disable alpha if images are opaque
+      if (!ctx || !images[index]) return;
 
-      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
+      const img = images[index];
 
-      const currentIndex = Math.floor(frameIndex.get());
-      if (currentIndex !== lastRenderedIndex && images[currentIndex]) {
-        const img = images[currentIndex];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#050505';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Math.max guarantees 'cover' behavior, meaning the image will completely fill the canvas.
+      // Therefore, ctx.clearRect and ctx.fillRect are unnecessary and cause performance overhead.
+      const hRatio = canvas.width / img.width;
+      const vRatio = canvas.height / img.height;
+      const ratio = Math.max(hRatio, vRatio);
+      const centerShift_x = (canvas.width - img.width * ratio) / 2;
+      const centerShift_y = (canvas.height - img.height * ratio) / 2;  
+      
+      ctx.drawImage(img, 0, 0, img.width, img.height,
+        centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
 
-        const hRatio = canvas.width / img.width;
-        const vRatio = canvas.height / img.height;
-        const ratio = Math.max(hRatio, vRatio);
-        const centerShift_x = (canvas.width - img.width * ratio) / 2;
-        const centerShift_y = (canvas.height - img.height * ratio) / 2;  
-        
-        ctx.drawImage(img, 0, 0, img.width, img.height,
-          centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-
-        lastRenderedIndex = currentIndex;
-      }
-      animationFrameId = requestAnimationFrame(render);
+      lastRenderedIndex = index;
     };
 
-    render();
-    return () => cancelAnimationFrame(animationFrameId);
+    // Render initial frame
+    renderFrame(Math.floor(frameIndex.get()));
+
+    const handleResize = () => {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      lastRenderedIndex = -1; // Force re-render on resize
+      renderFrame(Math.floor(frameIndex.get()));
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Framer motion provides an efficient observer for the scroll value
+    const unsubscribe = frameIndex.on("change", (latest) => {
+      renderFrame(Math.floor(latest));
+    });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      unsubscribe();
+    };
   }, [frameIndex, images, loadingComplete]);
 
   return (
@@ -143,17 +163,17 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
 
         <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block text-right z-50 pointer-events-none">
           <p className="text-[9px] text-[#D4AF37] uppercase tracking-widest mb-1">Project Elevation</p>
-          <p className="text-2xl font-mono text-white/80">+{hudElevation}m</p>
+          <motion.p className="text-2xl font-mono text-white/80">{hudElevationText}</motion.p>
         </div>
         
-        <ScrollOverlay progress={scrollYProgress} range={[0, 0.15]} align="center">
+        <ScrollOverlay progress={smoothProgress} range={[0, 0.15]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
-             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">Building the Future</h2>
-             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
-               <span className="font-light">WE DON'T JUST</span><br />
-               <span className="text-[#D4AF37] font-black">BUILD STRUCTURES.</span>
-             </h2>
-             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">We Build Legacies.</p>
+             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">Engineering Excellence</h2>
+             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
+               <span className="font-light">WE ENGINEER</span><br />
+               <span className="text-[#D4AF37] font-black">YOUR LEGACY.</span>
+             </h1>
+             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">Masterful Execution. Uncompromising Quality.</p>
              <div className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto">
                <button onClick={onStartProjectClick} className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer">Start Your Project</button>
                <button onClick={onViewProjectsClick} className="w-full sm:w-auto px-8 py-4 border border-white/30 text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer">View Our Projects</button>
@@ -161,69 +181,69 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
           </div>
         </ScrollOverlay>
 
-        <ScrollOverlay progress={scrollYProgress} range={[0.2, 0.35]} align="left">
+        <ScrollOverlay progress={smoothProgress} range={[0.2, 0.35]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">SITE PREPARATION</h2>
             <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
-              <span className="font-light">EVERY LANDMARK</span><br />
-              <span className="text-[#D4AF37] font-black">BEGINS WITH VISION.</span>
+              <span className="font-light">LAYING THE</span><br />
+              <span className="text-[#D4AF37] font-black">FOUNDATION.</span>
             </h3>
             <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
-              Clearing the path for progress. Our site preparation and surveying lay an unshakable foundation.
+              Strategic site preparation and rigorous surveying to establish an unshakable foundation for large-scale development.
             </p>
           </div>
         </ScrollOverlay>
 
-        <ScrollOverlay progress={scrollYProgress} range={[0.4, 0.55]} align="left">
+        <ScrollOverlay progress={smoothProgress} range={[0.4, 0.55]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">STRUCTURAL EXECUTION</h2>
             <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
-              <span className="font-light">ENGINEERED WITH</span><br />
-              <span className="text-[#D4AF37] font-black">PRECISION.</span>
+              <span className="font-light">THE FRAMEWORK OF</span><br />
+              <span className="text-[#D4AF37] font-black">EXCELLENCE.</span>
             </h3>
             <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
-              High-performance reinforced concrete structural frames rising with precision engineering.
+              High-performance structural engineering, executed with absolute precision and strict adherence to safety standards.
             </p>
           </div>
         </ScrollOverlay>
 
-        <ScrollOverlay progress={scrollYProgress} range={[0.6, 0.75]} align="left">
+        <ScrollOverlay progress={smoothProgress} range={[0.6, 0.75]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">ASSEMBLY PEAK</h2>
             <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
-              <span className="font-light">FROM BLUEPRINT</span><br />
-              <span className="text-[#D4AF37] font-black">TO REALITY.</span>
+              <span className="font-light">ORCHESTRATING</span><br />
+              <span className="text-[#D4AF37] font-black">SCALE.</span>
             </h3>
             <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
-              Heavy machinery and master craftsmen breathing life into the structure.
+              Elite project management and heavy machinery orchestration, transforming complex blueprints into monumental reality.
             </p>
           </div>
         </ScrollOverlay>
 
-        <ScrollOverlay progress={scrollYProgress} range={[0.8, 0.9]} align="left">
+        <ScrollOverlay progress={smoothProgress} range={[0.8, 0.9]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">FINISHING</h2>
             <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
-              <span className="font-light">MODERN DESIGN.</span><br />
-              <span className="text-[#D4AF37] font-black">DURABLE EXECUTION.</span>
+              <span className="font-light">ARCHITECTURAL</span><br />
+              <span className="text-[#D4AF37] font-black">POLISH.</span>
             </h3>
             <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
-              Meticulous installation of exterior cladding and premium finishes.
+              Meticulous execution of exterior cladding, premium materials, and flawless architectural finishes.
             </p>
           </div>
         </ScrollOverlay>
 
-        <ScrollOverlay progress={scrollYProgress} range={[0.95, 1.0]} align="center">
+        <ScrollOverlay progress={smoothProgress} range={[0.95, 1.0]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
              <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">COMPLETION</h2>
              <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
-               <span className="font-light">WELCOME TO THE</span><br />
-               <span className="text-[#D4AF37] font-black">FUTURE OF LIVING.</span>
+               <span className="font-light">VISION.</span><br />
+               <span className="text-[#D4AF37] font-black">REALIZED.</span>
              </h2>
-             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">Partner With BECL.</p>
-             <div className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto">
-               <button onClick={onStartProjectClick} className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer">Start Your Project</button>
-               <button onClick={onViewProjectsClick} className="w-full sm:w-auto px-8 py-4 border border-white/30 text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer">View Our Projects</button>
+             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">Partner With Engineering Authority.</p>
+             <div className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto justify-center">
+               <button onClick={onStartProjectClick} className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] hover:bg-white transition-colors text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-sm">Consult Our Engineers</button>
+               <button onClick={onViewProjectsClick} className="w-full sm:w-auto px-8 py-4 border border-white/30 hover:border-white transition-colors text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-sm">View Architectural Portfolio</button>
              </div>
           </div>
         </ScrollOverlay>
@@ -266,9 +286,10 @@ const ScrollOverlay: React.FC<ScrollOverlayProps> = ({ children, progress, range
   const yRaw = useTransform(
     progress,
     [p0, p1, p2, p3],
-    [0, 0, 0, end === 1 ? 0 : -30]
+    [30, 0, 0, end === 1 ? 0 : -30]
   );
-  const y = useTransform(yRaw, (v: number) => Math.max(-30, Math.min(0, v)));
+  // Optional clamping if we only want it strictly bounded
+  const y = useTransform(yRaw, (v: number) => v); // We let it move freely within bounds
 
   // Completely disable clicks when invisible so they don't block other elements
   const pointerEvents = useTransform(opacity, (v: number) => v > 0.05 ? "auto" : "none");
