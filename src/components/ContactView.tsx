@@ -60,7 +60,7 @@ export const ContactView = () => {
           <h2 className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] mb-6 flex items-center gap-4">
             <span className="h-[1px] w-12 bg-[#D4AF37]" /> Global Outreach
           </h2>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase leading-none text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">
             Connect <br />
             <span className="text-[#D4AF37]">With BECL.</span>
           </h1>
@@ -143,7 +143,7 @@ export const ContactView = () => {
                   className="relative z-10 flex flex-col items-center justify-center h-full text-center py-20"
                 >
                   <CheckCircle2 size={64} className="text-[#D4AF37] mb-6" />
-                  <h3 className="text-2xl font-bold text-white uppercase tracking-tighter mb-4">Message Received</h3>
+                  <h3 className="text-2xl font-bold text-white uppercase mb-4">Message Received</h3>
                   <p className="text-white/50 max-w-xs leading-relaxed">
                     Our engineering board has been notified. An executive consultant will reach out within 24 hours.
                   </p>

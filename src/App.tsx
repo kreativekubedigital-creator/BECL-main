@@ -185,7 +185,7 @@ export default function App() {
                    <h2 className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] mb-4 flex items-center gap-4">
                      <span className="h-[1px] w-12 bg-[#D4AF37]" /> Core Competencies
                    </h2>
-                   <h3 className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tighter leading-none text-white">Our Expertise</h3>
+                   <h3 className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase leading-none text-white">Our Expertise</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -227,7 +227,7 @@ export default function App() {
                      <h2 className="text-[10px] uppercase tracking-[0.5em] text-[#D4AF37] mb-4 flex items-center gap-4">
                        <span className="h-[1px] w-12 bg-[#D4AF37]" /> Architectural Impact
                      </h2>
-                     <h3 className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tighter leading-none text-white">Featured Projects</h3>
+                     <h3 className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase leading-none text-white">Featured Projects</h3>
                    </div>
                    <button className="flex items-center gap-2 text-[10px] uppercase tracking-widest hover:text-[#D4AF37] transition-colors group">
                      View All Projects
@@ -294,7 +294,7 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
           <div className="lg:col-span-2">
-            <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 uppercase leading-none">
+            <h2 className="text-6xl md:text-8xl font-black text-white mb-8 uppercase leading-none">
               READY TO<br/>
               <span className="text-[#D4AF37]">CONSTRUCT</span><br/>
               YOUR LEGACY?

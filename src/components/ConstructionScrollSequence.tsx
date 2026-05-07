@@ -149,7 +149,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0, 0.15]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
              <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">Building the Future</h2>
-             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase tracking-tighter mb-4">
+             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
                <span className="font-light">WE DON'T JUST</span><br />
                <span className="text-[#D4AF37] font-black">BUILD STRUCTURES.</span>
              </h2>
@@ -164,7 +164,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0.2, 0.35]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">SITE PREPARATION</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase tracking-tighter leading-none">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
               <span className="font-light">EVERY LANDMARK</span><br />
               <span className="text-[#D4AF37] font-black">BEGINS WITH VISION.</span>
             </h3>
@@ -177,7 +177,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0.4, 0.55]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">STRUCTURAL EXECUTION</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase tracking-tighter leading-none">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
               <span className="font-light">ENGINEERED WITH</span><br />
               <span className="text-[#D4AF37] font-black">PRECISION.</span>
             </h3>
@@ -190,7 +190,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0.6, 0.75]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">ASSEMBLY PEAK</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase tracking-tighter leading-none">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
               <span className="font-light">FROM BLUEPRINT</span><br />
               <span className="text-[#D4AF37] font-black">TO REALITY.</span>
             </h3>
@@ -203,7 +203,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0.8, 0.9]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">FINISHING</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase tracking-tighter leading-none">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
               <span className="font-light">MODERN DESIGN.</span><br />
               <span className="text-[#D4AF37] font-black">DURABLE EXECUTION.</span>
             </h3>
@@ -216,7 +216,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         <ScrollOverlay progress={scrollYProgress} range={[0.95, 1.0]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
              <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">COMPLETION</h2>
-             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase tracking-tighter mb-4">
+             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
                <span className="font-light">WELCOME TO THE</span><br />
                <span className="text-[#D4AF37] font-black">FUTURE OF LIVING.</span>
              </h2>
