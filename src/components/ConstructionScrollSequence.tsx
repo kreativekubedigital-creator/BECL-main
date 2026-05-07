@@ -171,11 +171,76 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
         <canvas ref={canvasRef} className="absolute left-0 top-0 w-full h-full object-cover opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
 
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block text-right z-50 pointer-events-none">
+        {/* Animated gold progress bar at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-50 pointer-events-none">
+          <motion.div 
+            className="h-full bg-[#D4AF37]"
+            style={{ scaleX: smoothProgress, transformOrigin: 'left' }}
+          />
+        </div>
+
+        {/* Scroll indicator at bottom center */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          style={{ opacity: useTransform(smoothProgress, [0, 0.08], [1, 0]) }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 pointer-events-none"
+        >
+          <span className="text-[8px] uppercase tracking-[0.4em] text-white/40">Scroll to explore</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-[1px] h-8 bg-gradient-to-b from-[#D4AF37] to-transparent"
+          />
+        </motion.div>
+
+        {/* HUD: Corner decorators */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="absolute top-8 left-8 hidden lg:block pointer-events-none z-50"
+        >
+          <div className="w-6 h-6 border-t border-l border-[#D4AF37]/40" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="absolute top-8 right-8 hidden lg:block pointer-events-none z-50"
+        >
+          <div className="w-6 h-6 border-t border-r border-[#D4AF37]/40" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="absolute bottom-8 left-8 hidden lg:block pointer-events-none z-50"
+        >
+          <div className="w-6 h-6 border-b border-l border-[#D4AF37]/40" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="absolute bottom-8 right-8 hidden lg:block pointer-events-none z-50"
+        >
+          <div className="w-6 h-6 border-b border-r border-[#D4AF37]/40" />
+        </motion.div>
+
+        {/* HUD: Elevation */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 1.4 }}
+          className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block text-right z-50 pointer-events-none"
+        >
           <p className="text-[9px] text-[#D4AF37] uppercase tracking-widest mb-1">Project Elevation</p>
           <motion.p className="text-2xl font-mono text-white/80">{hudElevationText}</motion.p>
-        </div>
+        </motion.div>
         
         <ScrollOverlay progress={smoothProgress} range={[0, 0.15]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
@@ -233,68 +298,211 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
 
         <ScrollOverlay progress={smoothProgress} range={[0.2, 0.35]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
-            <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">SITE PREPARATION</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left' }}
+              className="h-[1px] w-16 bg-[#D4AF37] mb-6"
+            />
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+            >SITE PREPARATION</motion.h2>
+            <motion.h3 
+              initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+            >
               <span className="font-light">LAYING THE</span><br />
               <span className="text-[#D4AF37] font-black">FOUNDATION.</span>
-            </h3>
-            <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+            >
               Strategic site preparation and rigorous surveying to establish an unshakable foundation for large-scale development.
-            </p>
+            </motion.p>
           </div>
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.4, 0.55]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
-            <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">STRUCTURAL EXECUTION</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left' }}
+              className="h-[1px] w-16 bg-[#D4AF37] mb-6"
+            />
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+            >STRUCTURAL EXECUTION</motion.h2>
+            <motion.h3 
+              initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+            >
               <span className="font-light">THE FRAMEWORK OF</span><br />
               <span className="text-[#D4AF37] font-black">EXCELLENCE.</span>
-            </h3>
-            <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+            >
               High-performance structural engineering, executed with absolute precision and strict adherence to safety standards.
-            </p>
+            </motion.p>
           </div>
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.6, 0.75]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
-            <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">ASSEMBLY PEAK</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left' }}
+              className="h-[1px] w-16 bg-[#D4AF37] mb-6"
+            />
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+            >ASSEMBLY PEAK</motion.h2>
+            <motion.h3 
+              initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+            >
               <span className="font-light">ORCHESTRATING</span><br />
               <span className="text-[#D4AF37] font-black">SCALE.</span>
-            </h3>
-            <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+            >
               Elite project management and heavy machinery orchestration, transforming complex blueprints into monumental reality.
-            </p>
+            </motion.p>
           </div>
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.8, 0.9]} align="left">
           <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
-            <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">FINISHING</h2>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none">
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left' }}
+              className="h-[1px] w-16 bg-[#D4AF37] mb-6"
+            />
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+            >FINISHING</motion.h2>
+            <motion.h3 
+              initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+            >
               <span className="font-light">ARCHITECTURAL</span><br />
               <span className="text-[#D4AF37] font-black">POLISH.</span>
-            </h3>
-            <p className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md">
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+            >
               Meticulous execution of exterior cladding, premium materials, and flawless architectural finishes.
-            </p>
+            </motion.p>
           </div>
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.95, 1.0]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
-             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">COMPLETION</h2>
-             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
+             <motion.div
+               initial={{ scaleX: 0 }}
+               whileInView={{ scaleX: 1 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+               className="h-[1px] w-24 bg-[#D4AF37] mb-6 mx-auto"
+             />
+             <motion.p
+               initial={{ opacity: 0, y: 10 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.6, delay: 0.1 }}
+               className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+             >COMPLETION</motion.p>
+             <motion.h2 
+               initial={{ opacity: 0, scale: 0.92, filter: 'blur(12px)' }}
+               whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+               viewport={{ once: true }}
+               transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+               className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4"
+             >
                <span className="font-light">VISION.</span><br />
                <span className="text-[#D4AF37] font-black">REALIZED.</span>
-             </h2>
-             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">Partner With Engineering Authority.</p>
-             <div className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto justify-center">
-               <button onClick={onStartProjectClick} className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] hover:bg-white transition-colors text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-sm">Consult Our Engineers</button>
-               <button onClick={onViewProjectsClick} className="w-full sm:w-auto px-8 py-4 border border-white/30 hover:border-white transition-colors text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-sm">View Architectural Portfolio</button>
-             </div>
+             </motion.h2>
+             <motion.p 
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8, delay: 0.5 }}
+               className="text-sm text-white/70 uppercase tracking-[0.4em]"
+             >Partner With Engineering Authority.</motion.p>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+               className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto justify-center"
+             >
+               <motion.button 
+                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                 onClick={onStartProjectClick} 
+                 className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] hover:bg-white transition-colors text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+               >Consult Our Engineers</motion.button>
+               <motion.button 
+                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                 onClick={onViewProjectsClick} 
+                 className="w-full sm:w-auto px-8 py-4 border border-white/30 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+               >View Architectural Portfolio</motion.button>
+             </motion.div>
           </div>
         </ScrollOverlay>
       </div>
