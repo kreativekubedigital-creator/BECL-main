@@ -53,7 +53,12 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
+      <motion.header 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent"
+      >
         <Link href="/" className="flex flex-col cursor-pointer group">
           <div className="flex items-center gap-2">
             <motion.div
@@ -85,7 +90,7 @@ export const Header = () => {
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {menuOpen && (

@@ -51,24 +51,35 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         const index = i + 1;
         return new Promise<void>((resolve) => {
           const img = new Image();
-          img.decoding = 'async'; // Optimization: decode images off main thread
           const paddedIndex = String(index).padStart(3, '0');
           const rawSrc = `/${imagePrefix}${paddedIndex}${imageExtension}`;
           const src = rawSrc.replace(/\/\//g, '/');
           
+          let isResolved = false;
+          const safeResolve = () => {
+            if (!isResolved) {
+              isResolved = true;
+              resolve();
+            }
+          };
+
           img.onload = () => {
             if (isMounted) {
               loadedImages[i] = img;
               setLoaded((prev) => prev + 1);
             }
-            resolve();
+            safeResolve();
           };
           img.onerror = () => {
             if (isMounted) {
               setErrorCount((prev) => prev + 1);
             }
-            resolve();
+            safeResolve();
           };
+          
+          // Safety fallback: if the image takes longer than 3 seconds, just resolve it
+          setTimeout(safeResolve, 3000);
+
           img.src = src;
         });
       });
@@ -168,16 +179,55 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         
         <ScrollOverlay progress={smoothProgress} range={[0, 0.15]} align="center">
           <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
-             <h2 className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4">Engineering Excellence</h2>
-             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4">
+             <motion.h2 
+               initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+               className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+             >
+               Engineering Excellence
+             </motion.h2>
+             <motion.h1 
+               initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+               className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4"
+             >
                <span className="font-light">WE ENGINEER</span><br />
                <span className="text-[#D4AF37] font-black">YOUR LEGACY.</span>
-             </h1>
-             <p className="text-sm text-white/70 uppercase tracking-[0.4em]">Masterful Execution. Uncompromising Quality.</p>
-             <div className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto">
-               <button onClick={onStartProjectClick} className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer">Start Your Project</button>
-               <button onClick={onViewProjectsClick} className="w-full sm:w-auto px-8 py-4 border border-white/30 text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer">View Our Projects</button>
-             </div>
+             </motion.h1>
+             <motion.p 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ duration: 1, delay: 0.8 }}
+               className="text-sm text-white/70 uppercase tracking-[0.4em]"
+             >
+               Masterful Execution. Uncompromising Quality.
+             </motion.p>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 0.8, delay: 1, ease: [0.22, 1, 0.36, 1] }}
+               className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto w-full sm:w-auto"
+             >
+               <motion.button 
+                 whileHover={{ scale: 1.05 }}
+                 whileTap={{ scale: 0.95 }}
+                 onClick={onStartProjectClick} 
+                 className="w-full sm:w-auto px-8 py-4 bg-[#D4AF37] text-black text-[10px] font-bold uppercase tracking-widest cursor-pointer relative overflow-hidden group"
+               >
+                 <span className="relative z-10">Start Your Project</span>
+                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.22,1,0.36,1]" />
+               </motion.button>
+               <motion.button 
+                 whileHover={{ scale: 1.05 }}
+                 whileTap={{ scale: 0.95 }}
+                 onClick={onViewProjectsClick} 
+                 className="w-full sm:w-auto px-8 py-4 border border-white/30 text-white text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-white/5 hover:border-white transition-colors"
+               >
+                 View Our Projects
+               </motion.button>
+             </motion.div>
           </div>
         </ScrollOverlay>
 
