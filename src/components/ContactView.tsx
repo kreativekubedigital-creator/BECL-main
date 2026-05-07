@@ -170,7 +170,7 @@ export const ContactView = () => {
                         type="text" 
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className={`w-full bg-[#050505] border ${errors.name ? 'border-red-500/50' : 'border-white/10'} px-4 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white`} 
+                        className={`w-full bg-transparent border-b ${errors.name ? 'border-red-500/50' : 'border-white/20'} px-0 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white placeholder:text-white/20`} 
                         placeholder="John Doe" 
                       />
                       {errors.name && <p className="text-[10px] text-red-500 uppercase tracking-wider">{errors.name}</p>}
@@ -181,7 +181,7 @@ export const ContactView = () => {
                         type="email" 
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className={`w-full bg-[#050505] border ${errors.email ? 'border-red-500/50' : 'border-white/10'} px-4 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white`} 
+                        className={`w-full bg-transparent border-b ${errors.email ? 'border-red-500/50' : 'border-white/20'} px-0 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white placeholder:text-white/20`} 
                         placeholder="john@example.com" 
                       />
                       {errors.email && <p className="text-[10px] text-red-500 uppercase tracking-wider">{errors.email}</p>}
@@ -193,7 +193,7 @@ export const ContactView = () => {
                     <select 
                       value={formData.service}
                       onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full bg-[#050505] border border-white/10 px-4 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white/60"
+                      className="w-full bg-[#050505] border-b border-white/20 px-0 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white/60 appearance-none"
                     >
                       <option>Pre-Construction Planning</option>
                       <option>General Contracting</option>
@@ -208,7 +208,7 @@ export const ContactView = () => {
                       rows={4} 
                       value={formData.brief}
                       onChange={(e) => setFormData({ ...formData, brief: e.target.value })}
-                      className={`w-full bg-[#050505] border ${errors.brief ? 'border-red-500/50' : 'border-white/10'} px-4 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white`} 
+                      className={`w-full bg-transparent border-b ${errors.brief ? 'border-red-500/50' : 'border-white/20'} px-0 py-4 text-sm focus:border-[#D4AF37] outline-none transition-colors text-white placeholder:text-white/20`} 
                       placeholder="Tell us about your project..."
                     ></textarea>
                     {errors.brief && <p className="text-[10px] text-red-500 uppercase tracking-wider">{errors.brief}</p>}
@@ -216,7 +216,7 @@ export const ContactView = () => {
 
                   <button 
                     disabled={isSubmitting}
-                    className="w-full py-5 bg-[#D4AF37] text-black font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-6 px-12 bg-[#D4AF37] text-black font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />

@@ -30,7 +30,7 @@ export default function App() {
           }
           if (mobile) setMenuOpen(false);
         }}
-        className={`hover:text-[#D4AF37] transition-colors ${view === 'home' ? 'text-white' : ''}`}
+        className={`hover:text-[#D4AF37] transition-colors ${view === 'home' ? 'text-white opacity-100' : 'opacity-60'}`}
       >
         Projects
       </a>
@@ -46,7 +46,7 @@ export default function App() {
           }
           if (mobile) setMenuOpen(false);
         }}
-        className={`hover:text-[#D4AF37] transition-colors ${view === 'home' ? 'text-white' : ''}`}
+        className={`hover:text-[#D4AF37] transition-colors ${view === 'home' ? 'text-white opacity-100' : 'opacity-60'}`}
       >
         Expertise
       </a>
@@ -56,7 +56,7 @@ export default function App() {
           window.scrollTo(0, 0);
           if (mobile) setMenuOpen(false);
         }}
-        className={`hover:text-[#D4AF37] transition-colors uppercase tracking-widest font-semibold text-left ${view === 'about' ? 'text-[#D4AF37] font-bold underline underline-offset-8 decoration-2' : ''}`}
+        className={`hover:text-[#D4AF37] transition-colors uppercase tracking-widest font-semibold text-left ${view === 'about' ? 'text-[#D4AF37] opacity-100' : 'opacity-60'}`}
       >
         About Us
       </button>
@@ -66,7 +66,7 @@ export default function App() {
           window.scrollTo(0, 0);
           if (mobile) setMenuOpen(false);
         }}
-        className={`hover:text-[#D4AF37] transition-colors uppercase tracking-widest font-semibold text-left ${view === 'contact' ? 'text-[#D4AF37] font-bold underline underline-offset-8 decoration-2' : ''}`}
+        className={`hover:text-[#D4AF37] transition-colors uppercase tracking-widest font-semibold text-left ${view === 'contact' ? 'text-[#D4AF37] opacity-100' : 'opacity-60'}`}
       >
         Contact
       </button>
@@ -200,9 +200,9 @@ export default function App() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: i * 0.1 + 0.3 }}
-                      className="group p-8 border border-white/5 hover:border-[#D4AF37]/30 bg-[#050505] transition-all duration-300 hover:-translate-y-2"
+                      className={`group p-8 pt-12 border-t border-white/10 ${i !== 0 ? 'md:border-l' : ''} bg-transparent transition-all duration-300 hover:bg-[#080808] hover:-translate-y-2`}
                     >
-                      <item.icon className="w-12 h-12 text-[#D4AF37] mb-6 stroke-[1.5]" />
+                      <item.icon className="w-12 h-12 text-[#D4AF37] mb-8 stroke-1" />
                       <h3 className="text-xl font-bold text-white mb-3 uppercase tracking-wide">{item.title}</h3>
                       <p className="text-white/50 leading-relaxed text-sm">
                         {item.desc}
@@ -236,14 +236,14 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {[1, 2, 3, 4].map((i) => (
+                  {[1, 2, 3].map((i) => (
                     <motion.div 
                       key={i} 
                       initial={{ opacity: 0, scale: 0.95 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, delay: i * 0.1 }}
-                      className="group relative aspect-[4/3] bg-[#111] overflow-hidden cursor-pointer"
+                      className={`group relative ${i === 1 ? 'md:col-span-2 aspect-[16/9] md:aspect-[21/9]' : 'aspect-[4/5]'} bg-[#111] overflow-hidden cursor-pointer`}
                     >
                       <div className="absolute inset-0 bg-[#222] transition-transform duration-700 group-hover:scale-105 flex items-center justify-center">
                          <Building2 className="text-[#333] w-24 h-24" />
@@ -294,11 +294,12 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
           <div className="lg:col-span-2">
-            <h2 className="text-3xl font-black text-white tracking-tighter mb-6 uppercase">
-              Ready to construct <br/>
-              <span className="text-[#D4AF37]">your legacy?</span>
+            <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 uppercase leading-none">
+              READY TO<br/>
+              <span className="text-[#D4AF37]">CONSTRUCT</span><br/>
+              YOUR LEGACY?
             </h2>
-            <p className="text-white/50 max-w-sm mb-8">
+            <p className="text-white/50 max-w-sm mb-12 text-lg">
               Discuss your next large-scale real estate or commercial project with our engineering experts.
             </p>
             <button 
