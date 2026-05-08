@@ -41,6 +41,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
 
   // Optimization: useTransform instead of useState prevents React from re-rendering the entire component 60 times a second during scroll
   const hudElevationText = useTransform(scrollYProgress, (latest) => `+${(latest * 150).toFixed(2)}m`);
+  const scrollIndicatorOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
 
   useEffect(() => {
     let isMounted = true;
@@ -101,9 +102,6 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
     let lastRenderedIndex = -1;
 
     const renderFrame = (index: number) => {
@@ -131,15 +129,21 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
     // Render initial frame
     renderFrame(Math.floor(frameIndex.get()));
 
-    const handleResize = () => {
+    const updateCanvasSize = () => {
       if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      lastRenderedIndex = -1; // Force re-render on resize
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      lastRenderedIndex = -1; // Force re-render
       renderFrame(Math.floor(frameIndex.get()));
     };
 
-    window.addEventListener('resize', handleResize, { passive: true });
+    // Initial setup
+    updateCanvasSize();
+
+    window.addEventListener('resize', updateCanvasSize, { passive: true });
 
     // Framer motion provides an efficient observer for the scroll value
     const unsubscribe = frameIndex.on("change", (latest) => {
@@ -147,7 +151,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
     });
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', updateCanvasSize);
       unsubscribe();
     };
   }, [frameIndex, images, loadingComplete]);
@@ -169,9 +173,9 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
       )}
 
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
-        <canvas ref={canvasRef} className="absolute left-0 top-0 w-full h-full object-cover opacity-60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/70 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+        <canvas ref={canvasRef} className="absolute left-0 top-0 w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40 pointer-events-none" />
 
         {/* Animated gold progress bar at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-50 pointer-events-none">
@@ -186,7 +190,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.5 }}
-          style={{ opacity: useTransform(smoothProgress, [0, 0.08], [1, 0]) }}
+          style={{ opacity: scrollIndicatorOpacity }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 pointer-events-none"
         >
           <span className="text-[8px] uppercase tracking-[0.4em] text-white/40">Scroll to explore</span>
@@ -243,12 +247,12 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </motion.div>
         
         <ScrollOverlay progress={smoothProgress} range={[0, 0.15]} align="center">
-          <div className="flex flex-col items-center text-center px-4 sm:px-8 w-full">
+          <div className="flex flex-col items-center text-center px-6 sm:px-8 w-full max-w-2xl mx-auto">
              <motion.h2 
                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-               className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+               className="text-[10px] sm:text-sm text-[#D4AF37]/80 uppercase tracking-[0.2em] sm:tracking-[0.6em] mb-3"
              >
                Engineering Excellence
              </motion.h2>
@@ -256,7 +260,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
                initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-               className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4"
+               className="text-2xl sm:text-4xl md:text-7xl lg:text-8xl text-white leading-[1.05] uppercase mb-4"
              >
                <span className="font-light">WE ENGINEER</span><br />
                <span className="text-[#D4AF37] font-black">YOUR LEGACY.</span>
@@ -265,7 +269,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                transition={{ duration: 1, delay: 0.8 }}
-               className="text-sm text-white/70 uppercase tracking-[0.4em]"
+               className="text-[10px] sm:text-sm text-white/70 uppercase tracking-[0.2em] sm:tracking-[0.4em]"
              >
                Masterful Execution. Uncompromising Quality.
              </motion.p>
@@ -297,7 +301,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.2, 0.35]} align="left">
-          <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
+          <div className="max-w-2xl px-5 sm:px-8 md:px-24 lg:px-32 mt-6 sm:mt-12 md:mt-24">
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -311,14 +315,14 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+              className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.6em] text-[#D4AF37]/80 mb-3"
             >SITE PREPARATION</motion.h2>
             <motion.h3 
               initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
               whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+              className="text-2xl sm:text-4xl md:text-6xl text-white mb-4 sm:mb-6 uppercase leading-[1.05]"
             >
               <span className="font-light">LAYING THE</span><br />
               <span className="text-[#D4AF37] font-black">FOUNDATION.</span>
@@ -328,7 +332,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+              className="text-xs sm:text-base md:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-3 sm:pl-6 max-w-md"
             >
               Strategic site preparation and rigorous surveying to establish an unshakable foundation for large-scale development.
             </motion.p>
@@ -336,7 +340,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.4, 0.55]} align="left">
-          <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
+          <div className="max-w-2xl px-5 sm:px-8 md:px-24 lg:px-32 mt-6 sm:mt-12 md:mt-24">
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -350,14 +354,14 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+              className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.6em] text-[#D4AF37]/80 mb-3"
             >STRUCTURAL EXECUTION</motion.h2>
             <motion.h3 
               initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
               whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+              className="text-2xl sm:text-4xl md:text-6xl text-white mb-4 sm:mb-6 uppercase leading-[1.05]"
             >
               <span className="font-light">THE FRAMEWORK OF</span><br />
               <span className="text-[#D4AF37] font-black">EXCELLENCE.</span>
@@ -367,7 +371,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+              className="text-xs sm:text-base md:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-3 sm:pl-6 max-w-md"
             >
               High-performance structural engineering, executed with absolute precision and strict adherence to safety standards.
             </motion.p>
@@ -375,7 +379,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.6, 0.75]} align="left">
-          <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
+          <div className="max-w-2xl px-5 sm:px-8 md:px-24 lg:px-32 mt-6 sm:mt-12 md:mt-24">
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -389,14 +393,14 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+              className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.6em] text-[#D4AF37]/80 mb-3"
             >ASSEMBLY PEAK</motion.h2>
             <motion.h3 
               initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
               whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+              className="text-2xl sm:text-4xl md:text-6xl text-white mb-4 sm:mb-6 uppercase leading-[1.05]"
             >
               <span className="font-light">ORCHESTRATING</span><br />
               <span className="text-[#D4AF37] font-black">SCALE.</span>
@@ -406,7 +410,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+              className="text-xs sm:text-base md:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-3 sm:pl-6 max-w-md"
             >
               Elite project management and heavy machinery orchestration, transforming complex blueprints into monumental reality.
             </motion.p>
@@ -414,7 +418,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </ScrollOverlay>
 
         <ScrollOverlay progress={smoothProgress} range={[0.8, 0.9]} align="left">
-          <div className="max-w-2xl px-8 md:px-24 lg:px-32 mt-12 md:mt-24">
+          <div className="max-w-2xl px-5 sm:px-8 md:px-24 lg:px-32 mt-6 sm:mt-12 md:mt-24">
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -428,14 +432,14 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[10px] uppercase tracking-[0.6em] text-[#D4AF37]/80 mb-4"
+              className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.6em] text-[#D4AF37]/80 mb-3"
             >FINISHING</motion.h2>
             <motion.h3 
               initial={{ opacity: 0, x: -30, filter: 'blur(8px)' }}
               whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl text-white mb-6 uppercase leading-none"
+              className="text-2xl sm:text-4xl md:text-6xl text-white mb-4 sm:mb-6 uppercase leading-[1.05]"
             >
               <span className="font-light">ARCHITECTURAL</span><br />
               <span className="text-[#D4AF37] font-black">POLISH.</span>
@@ -445,7 +449,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="text-base sm:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-4 sm:pl-6 max-w-md"
+              className="text-xs sm:text-base md:text-lg text-white/80 border-l-2 border-[#D4AF37] pl-3 sm:pl-6 max-w-md"
             >
               Meticulous execution of exterior cladding, premium materials, and flawless architectural finishes.
             </motion.p>
@@ -473,7 +477,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
                whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                viewport={{ once: true }}
                transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-               className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none uppercase mb-4"
+               className="text-2xl sm:text-4xl md:text-7xl lg:text-8xl text-white leading-[1.05] uppercase mb-4"
              >
                <span className="font-light">VISION.</span><br />
                <span className="text-[#D4AF37] font-black">REALIZED.</span>
@@ -483,7 +487,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
                whileInView={{ opacity: 1 }}
                viewport={{ once: true }}
                transition={{ duration: 0.8, delay: 0.5 }}
-               className="text-sm text-white/70 uppercase tracking-[0.4em]"
+               className="text-[10px] sm:text-sm text-white/70 uppercase tracking-[0.2em] sm:tracking-[0.4em]"
              >Partner With Engineering Authority.</motion.p>
              <motion.div 
                initial={{ opacity: 0, y: 20 }}
