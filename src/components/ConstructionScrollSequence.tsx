@@ -262,7 +262,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
                transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
                className="text-2xl sm:text-4xl md:text-7xl lg:text-8xl text-white leading-[1.05] uppercase mb-4"
              >
-               <span className="font-light">WE ENGINEER</span><br />
+               <span className="font-light whitespace-nowrap">WE ENGINEER</span><br />
                <span className="text-[#D4AF37] font-black">YOUR LEGACY.</span>
              </motion.h1>
              <motion.p 
