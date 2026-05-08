@@ -247,7 +247,7 @@ export const ConstructionScrollSequence: React.FC<ConstructionScrollSequenceProp
         </motion.div>
         
         <ScrollOverlay progress={smoothProgress} range={[0, 0.15]} align="center">
-          <div className="flex flex-col items-center text-center px-6 sm:px-8 w-full max-w-2xl mx-auto">
+          <div className="flex flex-col items-center text-center px-6 sm:px-8 w-full max-w-5xl mx-auto">
              <motion.h2 
                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
